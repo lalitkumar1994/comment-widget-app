@@ -8,7 +8,8 @@ const CommentForm = ({
   hasCancelButton = false,
   handleCancel,
   initialText = "",
-  currentUserInfo
+  currentUserInfo,
+  profileIcon = true,
 }) => {
   const [text, setText] = useState(initialText);
   const onSubmit = (event) => {
@@ -19,7 +20,7 @@ const CommentForm = ({
   return (
     <form onSubmit={onSubmit}>
       <div className="form-control">
-        <Avataar name={currentUserInfo.name} />
+        {profileIcon && <Avataar name={currentUserInfo.name} />}
         <textarea
           className="comment-form-textarea"
           value={text}

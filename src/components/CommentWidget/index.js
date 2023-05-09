@@ -1,7 +1,7 @@
 import { useState } from "react";
 import CommentForm from "./CommentForm";
 import Comment from "./Comment";
-import { createComment } from "../../commmentApi";
+import { createComment, updateComment } from "../../commmentApi";
 
 const Comments = ({ currentUserInfo }) => {
   const [comments, setComments] = useState([]);
@@ -23,12 +23,28 @@ const Comments = ({ currentUserInfo }) => {
     });
   };
 
+  const editComment = (text, commentId) => {
+    updateComment(text).then((data) => {
+      const { body, updatedAt} = data;
+      const updatedComments = comments.map((comment) => {
+          if(comment.id === commentId) {
+            comment.body = body;
+            comment.updatedAt = updatedAt;
+          }
+          return comment
+      });
+      setComments(updatedComments);
+      setActiveComment(null);
+    });
+  };
+
   const deleteComment = (commentId) => {
     if (window.confirm("Are you sure you want to remove comment?")) {
-      const updatedBackendComments = comments.filter(
-        (backendComment) => backendComment.id !== commentId
+      const updatedComments = comments.filter(
+        (comment) => comment.id !== commentId
       );
-      setComments(updatedBackendComments);
+      setComments(updatedComments);
+      setActiveComment(null);
     }
   };
 
@@ -47,6 +63,7 @@ const Comments = ({ currentUserInfo }) => {
             activeComment={activeComment}
             setActiveComment={setActiveComment}
             addComment={addComment}
+            editComment={editComment}
             deleteComment={deleteComment}
             currentUserInfo={currentUserInfo}
             getReplies={getReplies}

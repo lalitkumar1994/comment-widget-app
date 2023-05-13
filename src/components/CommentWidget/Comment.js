@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Avataar from "../Avataar";
 import CommentForm from "./CommentForm";
 const Comment = ({
@@ -6,11 +7,13 @@ const Comment = ({
   activeComment,
   setActiveComment,
   addComment,
+  editComment,
   deleteComment,
   parentId = null,
   currentUserInfo,
   getReplies,
 }) => {
+  const [isEditComment, setIsEditComment] = useState(false)
   const isReplying =
     activeComment &&
     activeComment.id === comment.id &&
@@ -22,14 +25,33 @@ const Comment = ({
       <div className="comment">
         <Avataar name={currentUserInfo.name} />
         <div className="comment-content">
-          <div className="comment-body">
-            <div className="comment-body-header">
-              <div className="user-name">{currentUserInfo.name}</div>
-              <div className="time-passed">{new Date(comment.createdAt).toLocaleDateString()}</div>
+          {!isEditComment && (
+            <div className="comment-body">
+              <div className="comment-body-header">
+                <div className="user-name">{currentUserInfo.name}</div>
+                <div className="time-passed">{new Date(comment.createdAt).toLocaleDateString()}</div>
+              </div>
+              <div className="comment-text">{comment.body}</div>
             </div>
-            <div className="comment-text">{comment.body}</div>
-          </div>
-          {!isReplying && (
+          )}
+          {isEditComment && (
+            <CommentForm
+              profileIcon={false}
+              submitLabel="Update"
+              hasCancelButton
+              handleSubmit={(text) => {
+                editComment(text, comment.id)
+                setIsEditComment(false)
+              }}
+              currentUserInfo={currentUserInfo}
+              handleCancel={() => {
+                setIsEditComment(false)
+              }}
+              parentId={comment.id}
+              initialText={comment.body}
+            />
+          )}
+          {!isEditComment && !isReplying && (
             <div className="comment-actions">
               <div
                 className="action-text "
@@ -50,10 +72,18 @@ const Comment = ({
                   >
                     Delete
                   </div>
+                  <div> | </div>
+                  <div
+                    className="action-text "
+                    onClick={() => setIsEditComment(true)}
+                  >
+                    Edit
+                  </div>
                 </>
               )}
             </div>
           )}
+
           <div className="reply-container">
             {replies.length > 0 && (
               <div className="replies">
@@ -65,6 +95,7 @@ const Comment = ({
                     activeComment={activeComment}
                     setActiveComment={setActiveComment}
                     addComment={addComment}
+                    editComment={editComment}
                     deleteComment={deleteComment}
                     currentUserInfo={currentUserInfo}
                     getReplies={getReplies}

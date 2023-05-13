@@ -6,5 +6,13 @@ export const createComment = async (text, parentId = null, userId) => {
     userId,
     username: "John",
     createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+};
+
+export const updateComment = async (text) => {
+  return {
+    body: text,
+    updatedAt: new Date().toISOString(),
   };
 };
